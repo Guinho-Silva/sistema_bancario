@@ -6,6 +6,8 @@ Lance exceções customizadas (SaldoInsuficienteError) em vez de só printar um 
 from rich import print
 from rich import inspect
 from rich.panel import Panel
+import datetime
+from datetime import datetime
 
 class ContaBancaria():
     def __init__(self, titular, saldo, numero_conta):
@@ -18,8 +20,16 @@ class ContaBancaria():
 
         self.numero_conta = numero_conta
 
+        self.historico = []
+
     def depositar(self, valor_deposito):
         self.saldo += valor_deposito
+
+        self.historico.append({
+            "Tipo": "Deposito",
+            "Valor": valor_deposito,
+            "Data": datetime.now()
+        })
 
         return f"Deposito de {self.saldo} realizado com sucesso!"
     
@@ -29,17 +39,36 @@ class ContaBancaria():
             return
         self.saldo -= valor_saque
 
+        self.historico.append({
+            "Tipo": "Saque",
+            "Valor": valor_saque,
+            "Data": datetime.now()
+        })
+
         return f'Saque de {valor_saque} realizado com sucesso!'
 
     def extrato(self) -> str:
-        conteudo = f'Titular {self.titular}\n'
+        conteudo = f'Titular: {self.titular}\n'
 
         conteudo += f"Número da Conta: {self.numero_conta}\n"
 
-        conteudo += '-' *  30 + '\n'
+        if not self.historico:
+            conteudo += f"Nenhuma movimentação realizada na conta: \'{self.numero_conta}\'\n"
+
+        else:
+            for movimentacao in self.historico:
+                data_formatada = movimentacao["Data"].strftime("%d/%m/%Y %H:%M")
+
+                conteudo += (
+                    f"{data_formatada} | "
+                    f"{movimentacao['Tipo']} | "
+                    f"R$ {movimentacao['Valor']:.2f}\n"
+                )
+
+        conteudo += '-' *  56 + '\n'
 
         conteudo += f"Saldo atual: R${self.saldo:,.2f}"
-        folha_extrato = Panel(conteudo, title="Extrato Bancário")
+        folha_extrato = Panel(conteudo, title="Extrato Bancário", width= 60)
 
         print(folha_extrato)
     
