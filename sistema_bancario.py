@@ -8,6 +8,7 @@ from rich import inspect
 from rich.panel import Panel
 import datetime
 from datetime import datetime
+import excecoes 
 
 class ContaBancaria():
     def __init__(self, titular, saldo, numero_conta):
@@ -23,6 +24,11 @@ class ContaBancaria():
         self.historico = []
 
     def depositar(self, valor_deposito):
+
+        if not isinstance(valor_deposito, (int, float)):
+            raise excecoes.ValorInvalido(valor_deposito)
+        if valor_deposito <=0:
+            raise excecoes.ValorInvalido(valor_deposito)
         self.saldo += valor_deposito
 
         self.historico.append({
@@ -35,8 +41,8 @@ class ContaBancaria():
     
     def sacar (self, valor_saque):  
         if valor_saque > self.saldo:
-            print("Saldo insuficiente.")
-            return
+            raise excecoes.SaldoInsuficiente(self.titular, valor_saque, self.saldo)
+        
         self.saldo -= valor_saque
 
         self.historico.append({
@@ -131,3 +137,14 @@ class ContaCorrente(ContaBancaria):
 # t3.sacar(8000)
 
 # t3.extrato()
+
+t4 = ContaBancaria('Iago', 500, 224)
+
+try:
+    t4.depositar(0)
+
+except excecoes.ValorInvalido as erro:
+    print(erro)
+
+finally:
+    t4.extrato()
