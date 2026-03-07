@@ -16,6 +16,6 @@ Projeto de estudo de Orientação a Objetos em Python, implementando um sistema 
 
  ## Próximos passos
 
- - [ ] Historico de transações
+✅ Historico de transações
  - [ ] Exceções customizadas
  - [ ] Conexão a um SGBD
